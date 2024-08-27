@@ -12,7 +12,7 @@ fn main() {
         println!("cargo:rustc-link-lib=dylib=dwf.dll");
         include_path = "C:\\Program Files (x86)\\Digilent\\WaveFormsSDK\\inc"
     } else if cfg!(target_os = "linux") {
-        println!("cargo:rustc-link-lib=dylib=libdwf.so");
+        println!("cargo:rustc-link-lib=dylib=dwf");
         include_path = "/usr/include/digilent/waveforms"
     } else {
         unimplemented!("Only Linux, Mac OS and Windows are supported");
