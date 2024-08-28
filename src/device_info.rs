@@ -16,10 +16,19 @@ pub trait DeviceInfo: DeviceId {
                 name.as_mut_ptr(),
             ))?;
 
-            Ok(CStr::from_ptr(mem::transmute(name.as_mut_ptr()))
-                .to_str()
+            let name: String = CStr::from_ptr(mem::transmute(name.as_mut_ptr())).to_str()
                 .unwrap()
-                .to_owned())
+                .to_owned();
+
+            // The SN is returned in the name buffer. Remove it.
+            let device_name = match name.find("SN:") {
+                Some(index) => {
+                    return Ok(name[..index].to_string());
+                }
+                None => {name}
+            };
+
+            Ok(device_name)
         }
     }
 
@@ -28,10 +37,15 @@ pub trait DeviceInfo: DeviceId {
         unsafe {
             check_call(dwf::FDwfEnumSN(self.get_device_id(), serial.as_mut_ptr()))?;
 
-            Ok(CStr::from_ptr(mem::transmute(serial.as_mut_ptr()))
+            let sn = CStr::from_ptr(mem::transmute(serial.as_mut_ptr()))
                 .to_str()
                 .unwrap()
-                .to_owned())
+                .to_owned();
+
+            // Remove the SN: prefix
+            let sn = sn.replace("SN:", "");
+
+            Ok(sn)
         }
     }
 
